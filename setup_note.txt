@@ -1,0 +1,25 @@
+vagrant provision --provision-with master-key,node01-key,node02-key,node03-key
+chmod -R og-rw ~/.ssh/
+vagrant ssh master -c 'ansible-playbook /home/vagrant/openshift-ansible/playbooks/prerequisites.yml'
+---- reboot all
+docker pull openshift/origin-node:v3.11
+docker pull openshift/origin-pod:v3.11
+docker pull openshift/origin-docker-builder:v3.11.0
+
+# on master
+docker pull openshift/origin-node:v3.11
+docker pull openshift/origin-pod:v3.11
+docker pull openshift/origin-control-plane:v3.11
+docker pull openshift/origin-docker-registry:v3.11
+docker pull openshift/oauth-proxy:v1.1.0
+docker pull openshift/origin-console:v3.11
+docker pull openshift/origin-web-console:v3.11
+docker pull openshift/prometheus:v2.3.2
+docker pull cockpit/kubernetes:latest
+docker pull grafana/grafana:5.2.1
+
+
+vagrant ssh master -c 'ansible-playbook /home/vagrant/openshift-ansible/playbooks/deploy_cluster.yml'
+
+#cluster monitoring
+oc adm policy add-cluster-role-to-user cluster-monitoring-view admin
